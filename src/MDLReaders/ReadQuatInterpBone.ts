@@ -2,6 +2,7 @@ import type FileReader from '../FileReader';
 import ReadQuatInterpInfo from './ReadQuatInterpInfo';
 
 class ReadQuatInterpBone {
+    // Size of 12 bytes
     public readonly control: number;
     public readonly numtriggers: number;
     public readonly triggerindex: number;
@@ -9,7 +10,6 @@ class ReadQuatInterpBone {
     public triggers: ReadQuatInterpInfo[] = [];
 
     public constructor(file: FileReader) {
-        // Size of 12 bytes
         const index = file.fileReadOffset;
         this.control = file.readInt();
         this.numtriggers = file.readInt();

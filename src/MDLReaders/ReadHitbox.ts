@@ -2,6 +2,7 @@ import type FileReader from '../FileReader';
 import type Vector3 from '../Vector3';
 
 class ReadHitbox {
+    // Size of 68 bytes
     public readonly bone: number;
     public readonly group: number;
     public readonly bbmin: Vector3;
@@ -9,7 +10,6 @@ class ReadHitbox {
     public readonly szhitboxnameindex: number;
 
     public constructor(file: FileReader) {
-        // Size of 68 bytes
         this.bone = file.readInt();
         this.group = file.readInt();
         this.bbmin = file.readVector3();

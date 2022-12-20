@@ -1,6 +1,8 @@
 import type FileReader from '../FileReader';
 
 class ReadHeader {
+    // Size of 64 bytes
+
     /**
      * This is an encoding of "IDSV". What does it mean?
      */
@@ -51,7 +53,6 @@ class ReadHeader {
     public readonly tangentDataStart: number;
 
     public constructor(file: FileReader) {
-        // Size of 64 bytes
         this.id = file.readInt();
         this.version = file.readInt();
         this.checksum = file.readInt();

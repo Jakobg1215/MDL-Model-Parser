@@ -3,6 +3,7 @@ import type Vector3 from '../Vector3';
 import type Vector4 from '../Vector4';
 
 class ReadIKRule {
+    // Size of 152 bytes
     public readonly index: number;
     public readonly type: number;
     public readonly chain: number;
@@ -26,7 +27,6 @@ class ReadIKRule {
     public readonly szattachmentindex: number;
 
     public constructor(file: FileReader) {
-        // Size of 152 bytes
         this.index = file.readInt();
         this.type = file.readInt();
         this.chain = file.readInt();

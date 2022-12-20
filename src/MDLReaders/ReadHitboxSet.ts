@@ -2,6 +2,7 @@ import type FileReader from '../FileReader';
 import ReadHitbox from './ReadHitbox';
 
 class ReadHitboxSet {
+    // Size of 12 bytes
     public readonly sznameindex: number;
     public readonly numhitboxes: number;
     public readonly hitboxindex: number;
@@ -9,7 +10,6 @@ class ReadHitboxSet {
     public readonly hitboxes: ReadHitbox[] = [];
 
     public constructor(file: FileReader) {
-        // Size of 12 bytes
         const index = file.fileReadOffset;
         this.sznameindex = file.readInt();
         this.numhitboxes = file.readInt();

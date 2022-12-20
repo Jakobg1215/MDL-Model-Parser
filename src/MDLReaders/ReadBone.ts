@@ -7,6 +7,7 @@ import ReadJiggleBone from './ReadJiggleBone';
 import ReadQuatInterpBone from './ReadQuatInterpBone';
 
 class ReadBone {
+    // Size of 216 bytes
     public readonly sznameindex: number;
     public readonly parent: number;
     public readonly bonecontroller: [number, number, number, number, number, number];
@@ -27,7 +28,6 @@ class ReadBone {
     public readonly proceduralRule: null | ReadAxisInterpBone | ReadQuatInterpBone | ReadAimAtBone | ReadJiggleBone = null;
 
     public constructor(file: FileReader) {
-        // Size of 216 bytes
         const index = file.fileReadOffset;
         this.sznameindex = file.readInt();
         this.parent = file.readInt();

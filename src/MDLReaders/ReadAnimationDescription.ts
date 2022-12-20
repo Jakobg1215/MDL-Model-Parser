@@ -2,6 +2,7 @@ import type FileReader from '../FileReader';
 import ReadMovement from './ReadMovement';
 
 class ReadAnimationDescription {
+    // Size of 100 bytes
     public readonly baseptr: number;
     public readonly sznameindex: number;
     public readonly fps: number;
@@ -26,7 +27,6 @@ class ReadAnimationDescription {
     public readonly movements: ReadMovement[] = [];
 
     public constructor(file: FileReader) {
-        // Size of 100 bytes
         const index = file.fileReadOffset;
         this.baseptr = file.readInt();
         this.sznameindex = file.readInt();
