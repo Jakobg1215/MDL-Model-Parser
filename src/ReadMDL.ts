@@ -7,6 +7,7 @@ import ReadBoneController from './MDLReaders/ReadBoneController';
 import ReadFlexController from './MDLReaders/ReadFlexController';
 import ReadFlexControllerUI from './MDLReaders/ReadFlexControllerUI';
 import ReadFlexDescription from './MDLReaders/ReadFlexDescription';
+import ReadFlexRule from './MDLReaders/ReadFlexRule';
 import ReadHeader from './MDLReaders/ReadHeader';
 import ReadHeader2 from './MDLReaders/ReadHeader2';
 import ReadHitboxSet from './MDLReaders/ReadHitboxSet';
@@ -24,11 +25,14 @@ class ReadMDL {
     public readonly flexDescriptions: ReadFlexDescription[] = [];
     public readonly flexControllers: ReadFlexController[] = [];
     public readonly flexControllerUIs: ReadFlexControllerUI[] = [];
+    public readonly flexRules: ReadFlexRule[] = [];
 
     public constructor(file: FileReader) {
         const fileSize = file.readableBytes.length;
         console.log('MDL File size: %d', fileSize);
         this.header = new ReadHeader(file);
+
+        // Tried to keep the order of the readers the same as the order of the MDL file.
 
         // From looking at the source code, header2 may be optional.
         this.header2 = new ReadHeader2(file);
@@ -53,6 +57,7 @@ class ReadMDL {
             this.hitboxSets.push(new ReadHitboxSet(file)); // Done
         }
 
+        // What is this for?
         file.setOffset(this.header.bonetablebynameindex);
         this.boneTableByName = file.readByteArray(this.header.numbones); // This is not reading all the bytes
 
@@ -87,14 +92,17 @@ class ReadMDL {
             this.flexControllerUIs.push(new ReadFlexControllerUI(file)); // Done
         }
 
+        for (let flexRuleReader = 0; flexRuleReader < this.header.numflexrules; flexRuleReader++) {
+            file.setOffset(this.header.flexruleindex + flexRuleReader * 12);
+            this.flexRules.push(new ReadFlexRule(file)); // Not Done
+        }
+
         console.log('MDL Read Bytes: %d, %d unread bytes', file.readByteCount, fileSize - file.readByteCount);
     }
 
     public toJSON(): string {
         return JSON.stringify({
             Header: this.header,
-            Bones: this.bones,
-            // 'Local Animations': this.localAnimations,
         });
     }
 }
