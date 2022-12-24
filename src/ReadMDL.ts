@@ -72,8 +72,8 @@ class ReadMDL {
 
         // TODO: Add nodes reader
 
-        file.setOffset(this.header.bodypartindex);
         for (let bodyPartReader = 0; bodyPartReader < this.header.numbodyparts; bodyPartReader++) {
+            file.setOffset(this.header.bodypartindex + bodyPartReader * 16);
             this.bodyParts.push(new ReadBodyParts(file)); // Not Done
         }
 
@@ -103,6 +103,7 @@ class ReadMDL {
     public toJSON(): string {
         return JSON.stringify({
             Header: this.header,
+            'Body Parts': this.bodyParts,
         });
     }
 }

@@ -2,6 +2,7 @@ import type FileReader from '../FileReader';
 import type Vector3 from '../Vector3';
 
 class ReadEyeball {
+    // Size of 172 bytes
     public readonly sznameindex: number;
     public readonly bone: number;
     public readonly org: Vector3;

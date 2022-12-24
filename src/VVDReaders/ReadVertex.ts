@@ -1,4 +1,4 @@
-import FileReader from '../FileReader';
+import type FileReader from '../FileReader';
 import type Vector2 from '../Vector2';
 import type Vector3 from '../Vector3';
 import ReadBoneWeight from './ReadBoneWeight';

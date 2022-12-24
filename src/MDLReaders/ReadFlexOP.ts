@@ -1,4 +1,4 @@
-import FileReader from '../FileReader';
+import type FileReader from '../FileReader';
 
 class ReadFlexOP {
     // Size of 8 bytes

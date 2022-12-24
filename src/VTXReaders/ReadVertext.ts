@@ -1,4 +1,4 @@
-import FileReader from '../FileReader';
+import type FileReader from '../FileReader';
 
 class ReadVertext {
     public readonly boneWeightIndex: [number, number, number];

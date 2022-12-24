@@ -1,4 +1,4 @@
-import FileReader from '../FileReader';
+import type FileReader from '../FileReader';
 import type Vector3 from '../Vector3';
 import ReadLegacySurfaceHeader from './ReadLegacySurfaceHeader';
 

@@ -1,4 +1,4 @@
-import FileReader from '../FileReader';
+import type FileReader from '../FileReader';
 import ReadMaterialReplacementHeader from './ReadMaterialReplacementHeader';
 
 class ReadMaterialReplacementListHeader {

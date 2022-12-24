@@ -2,6 +2,7 @@ import type FileReader from '../FileReader';
 import ReadModel from './ReadModel';
 
 class ReadBodyParts {
+    // Size of 16 bytes
     public readonly sznameindex: number;
     public readonly nummodels: number;
     public readonly base: number;
@@ -15,14 +16,11 @@ class ReadBodyParts {
         this.nummodels = file.readInt();
         this.base = file.readInt();
         this.modelindex = file.readInt();
-        const offset = file.fileReadOffset;
 
-        file.setOffset(index + this.modelindex);
         for (let modelReader = 0; modelReader < this.nummodels; modelReader++) {
+            file.setOffset(index + this.modelindex + modelReader * 148);
             this.models.push(new ReadModel(file));
         }
-
-        file.setOffset(offset);
     }
 }
 

@@ -1,4 +1,4 @@
-import FileReader from '../FileReader';
+import type FileReader from '../FileReader';
 
 class ReadFlexControllerUI {
     public readonly sznameindex: number;

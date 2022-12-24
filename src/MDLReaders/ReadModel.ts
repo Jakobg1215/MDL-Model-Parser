@@ -1,8 +1,10 @@
 import type FileReader from '../FileReader';
+import ReadEyeball from './ReadEyeball';
 import ReadMesh from './ReadMesh';
 import ReadModelVertexData from './ReadModelVertexData';
 
 class ReadModel {
+    // Size of 148 bytes
     public readonly name: string;
     public readonly type: number;
     public readonly boundingradius: number;
@@ -18,6 +20,7 @@ class ReadModel {
     public readonly vertexdata: ReadModelVertexData;
 
     public readonly meshes: ReadMesh[] = [];
+    public readonly eyeballs: ReadEyeball[] = [];
 
     public constructor(file: FileReader) {
         const index = file.fileReadOffset;
@@ -35,14 +38,16 @@ class ReadModel {
         this.eyeballindex = file.readInt();
         this.vertexdata = new ReadModelVertexData(file);
         file.readIntArray(8); // unused
-        const offset = file.fileReadOffset;
 
-        file.setOffset(index + this.meshindex);
         for (let meshReader = 0; meshReader < this.nummeshes; meshReader++) {
+            file.setOffset(index + this.meshindex + meshReader * 116);
             this.meshes.push(new ReadMesh(file));
         }
 
-        file.setOffset(offset);
+        for (let eyeballReader = 0; eyeballReader < this.numeyeballs; eyeballReader++) {
+            file.setOffset(index + this.eyeballindex + eyeballReader * 172);
+            this.eyeballs.push(new ReadEyeball(file));
+        }
     }
 }
 

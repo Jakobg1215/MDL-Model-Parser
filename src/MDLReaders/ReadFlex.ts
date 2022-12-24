@@ -1,6 +1,8 @@
-import FileReader from '../FileReader';
+import type FileReader from '../FileReader';
+import ReadVertexAnimation from './ReadVertexAnimation';
 
 class ReadFlex {
+    // Size of 63 bytes
     public readonly flexdesc: number;
     public readonly target0: number;
     public readonly target1: number;
@@ -10,6 +12,8 @@ class ReadFlex {
     public readonly vertindex: number;
     public readonly flexpair: number;
     public readonly vertanimtype: number;
+
+    public readonly verticesAnimations: ReadVertexAnimation[] = [];
 
     public constructor(file: FileReader) {
         this.flexdesc = file.readInt();
@@ -23,6 +27,11 @@ class ReadFlex {
         this.vertanimtype = file.readInt();
         file.readByteArray(3); // unusedchar
         file.readIntArray(6); // unused
+
+        // for (let vertexAnimationReader = 0; vertexAnimationReader < this.numverts; vertexAnimationReader++) {
+        //     file.setOffset(this.vertindex + vertexAnimationReader * 16);
+        //     this.verticesAnimations.push(new ReadVertexAnimation(file));
+        // }
     }
 }
 
