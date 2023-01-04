@@ -24,6 +24,8 @@ class ReadVVD {
         // Garry's Mod models have it to support csgo models.
         // For other games it doen't exist.
         // Need to test if gmod will load the model if the extra uv map data is not there.
+        if (this.header.numFixups) file.readInt(); // Here just to read the extra bytes.
+        // More testing is need to be done to undersand this.
 
         for (let vertexReader = 0; vertexReader < this.header.numLODVertexes[0]; vertexReader++) {
             file.setOffset(this.header.vertexDataStart + vertexReader * 48);
