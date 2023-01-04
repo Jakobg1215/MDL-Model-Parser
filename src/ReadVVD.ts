@@ -20,9 +20,10 @@ class ReadVVD {
             this.fixupTables.push(new ReadFixupTable(file));
         }
 
-        // If the vvd file has a fixup table, it will come with 8 extra bytes at the end.
-        // This needs to be looked into to check if its needeed for the file to be accepted or its just source weirdness.
-        // Need to check if this is always the case, or if it is just with some files.
+        // The 4 extra bytes are for the extra uv map data for csgo.
+        // Garry's Mod models have it to support csgo models.
+        // For other games it doen't exist.
+        // Need to test if gmod will load the model if the extra uv map data is not there.
 
         for (let vertexReader = 0; vertexReader < this.header.numLODVertexes[0]; vertexReader++) {
             file.setOffset(this.header.vertexDataStart + vertexReader * 48);
