@@ -1,6 +1,7 @@
 import type FileReader from '../FileReader';
 
 class ReadFlexController {
+    // Size of 20 bytes
     public readonly sztypeindex: number;
     public readonly sznameindex: number;
     public readonly localToGlobal: number;

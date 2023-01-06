@@ -1,6 +1,7 @@
 import type FileReader from '../FileReader';
 
 class ReadFlexControllerUI {
+    // Size of 20 bytes
     public readonly sznameindex: number;
     public readonly szindex0: number;
     public readonly szindex1: number;

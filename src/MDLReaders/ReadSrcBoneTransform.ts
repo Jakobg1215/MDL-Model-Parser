@@ -2,6 +2,7 @@ import type FileReader from '../FileReader';
 import type Vector4 from '../Vector4';
 
 class ReadSrcBoneTransform {
+    // Size of 132 bytes
     public readonly sznameindex: number;
     public readonly pretransform: [Vector4, Vector4, Vector4, Vector4];
     public readonly posttransform: [Vector4, Vector4, Vector4, Vector4];

@@ -1,4 +1,5 @@
 import type FileReader from './FileReader';
+import ReadAnimationBlock from './MDLReaders/ReadAnimationBlock';
 import ReadAnimationDescription from './MDLReaders/ReadAnimationDescription';
 import ReadAttachment from './MDLReaders/ReadAttachment';
 import ReadBodyParts from './MDLReaders/ReadBodyParts';
@@ -11,6 +12,13 @@ import ReadFlexRule from './MDLReaders/ReadFlexRule';
 import ReadHeader from './MDLReaders/ReadHeader';
 import ReadHeader2 from './MDLReaders/ReadHeader2';
 import ReadHitboxSet from './MDLReaders/ReadHitboxSet';
+import ReadIKChain from './MDLReaders/ReadIKChain';
+import ReadIKLock from './MDLReaders/ReadIKLock';
+import ReadModelGroup from './MDLReaders/ReadModelGroup';
+import ReadMouth from './MDLReaders/ReadMouth';
+import ReadPoseParamDescription from './MDLReaders/ReadPoseParamDescription';
+import ReadSrcBoneTransform from './MDLReaders/ReadSrcBoneTransform';
+import ReadTexture from './MDLReaders/ReadTexture';
 
 class ReadMDL {
     public readonly header: ReadHeader;
@@ -26,6 +34,16 @@ class ReadMDL {
     public readonly flexControllers: ReadFlexController[] = [];
     public readonly flexControllerUIs: ReadFlexControllerUI[] = [];
     public readonly flexRules: ReadFlexRule[] = [];
+    public readonly ikChains: ReadIKChain[] = [];
+    public readonly ikLocks: ReadIKLock[] = [];
+    public readonly mouths: ReadMouth[] = [];
+    public readonly poseParameters: ReadPoseParamDescription[] = [];
+    public readonly modelGroups: ReadModelGroup[] = [];
+    public readonly animationBlocks: ReadAnimationBlock[] = [];
+    public readonly textures: ReadTexture[] = [];
+    public readonly textureDirectories: number[] = [];
+    public readonly textureFamilies: number[] = [];
+    public readonly srcBoneTransformations: ReadSrcBoneTransform[] = [];
 
     public constructor(file: FileReader) {
         const fileSize = file.readableBytes.length;
@@ -99,15 +117,15 @@ class ReadMDL {
 
         /* Flex Discriptions */
 
-        file.setOffset(this.header.flexdescindex);
         for (let flexDescriptionReader = 0; flexDescriptionReader < this.header.numflexdesc; flexDescriptionReader++) {
+            file.setOffset(this.header.flexdescindex + flexDescriptionReader * 4);
             this.flexDescriptions.push(new ReadFlexDescription(file)); // Done
         }
 
-        /* FLex Controllers */
+        /* Flex Controllers */
 
-        file.setOffset(this.header.flexcontrollerindex);
         for (let flexControllerReader = 0; flexControllerReader < this.header.numflexcontrollers; flexControllerReader++) {
+            file.setOffset(this.header.flexcontrollerindex + flexControllerReader * 20);
             this.flexControllers.push(new ReadFlexController(file)); // Done
         }
 
@@ -115,59 +133,90 @@ class ReadMDL {
 
         for (let flexRuleReader = 0; flexRuleReader < this.header.numflexrules; flexRuleReader++) {
             file.setOffset(this.header.flexruleindex + flexRuleReader * 12);
-            this.flexRules.push(new ReadFlexRule(file)); // Not Done
+            this.flexRules.push(new ReadFlexRule(file)); // Done
         }
 
         /* Flex Controller UI */
 
-        file.setOffset(this.header.flexcontrolleruiindex);
         for (let flexControllerUIReader = 0; flexControllerUIReader < this.header.numflexcontrollerui; flexControllerUIReader++) {
+            file.setOffset(this.header.flexcontrolleruiindex + flexControllerUIReader * 20);
             this.flexControllerUIs.push(new ReadFlexControllerUI(file)); // Done
         }
 
         /* IK Chains */
 
-        // TODO: Add IK Chains reader
+        for (let ikChainReader = 0; ikChainReader < this.header.numikchains; ikChainReader++) {
+            file.setOffset(this.header.ikchainindex + ikChainReader * 16);
+            this.ikChains.push(new ReadIKChain(file)); // Done
+        }
 
         /* IK Locks */
 
-        // TODO: Add IK Locks reader
+        for (let ikLockReader = 0; ikLockReader < this.header.numlocalikautoplaylocks; ikLockReader++) {
+            file.setOffset(this.header.localikautoplaylockindex + ikLockReader * 32);
+            this.ikLocks.push(new ReadIKLock(file)); // Done
+        }
 
         /* Mouths */
 
-        // TODO: Add Mouths reader
+        for (let mouthsReader = 0; mouthsReader < this.header.nummouths; mouthsReader++) {
+            file.setOffset(this.header.mouthindex + mouthsReader * 20);
+            this.mouths.push(new ReadMouth(file)); // Done
+        }
 
         /* Pose Parameters */
 
-        // TODO: Add Pose Parameters reader
+        for (let poseParameterReader = 0; poseParameterReader < this.header.numlocalposeparameters; poseParameterReader++) {
+            file.setOffset(this.header.localposeparamindex + poseParameterReader * 20);
+            this.poseParameters.push(new ReadPoseParamDescription(file)); // Done
+        }
 
         /* Model Groups */
 
-        // TODO: Add Model Groups reader
+        for (let modelGroupReader = 0; modelGroupReader < this.header.numincludemodels; modelGroupReader++) {
+            file.setOffset(this.header.includemodelindex + modelGroupReader * 8);
+            this.modelGroups.push(new ReadModelGroup(file)); // Done
+        }
 
         /* Animation Blocks */
 
-        // TODO: Add Animation Blocks reader
+        for (let animationBlockReader = 0; animationBlockReader < this.header.numanimblocks; animationBlockReader++) {
+            file.setOffset(this.header.animblockindex + animationBlockReader * 8);
+            this.animationBlocks.push(new ReadAnimationBlock(file)); // Done
+        }
 
         /* Textures */
 
-        // TODO: Add Textures reader
+        for (let textureReader = 0; textureReader < this.header.numtextures; textureReader++) {
+            file.setOffset(this.header.textureindex + textureReader * 64);
+            this.textures.push(new ReadTexture(file)); // Done
+        }
 
         /* Texture Directories */
 
-        // TODO: Add Texture Directories reader
+        file.setOffset(this.header.cdtextureindex);
+        this.textureDirectories = file.readIntArray(this.header.numcdtextures);
 
         /* Texture Families */
 
-        // TODO: Add Texture Families reader
+        file.setOffset(this.header.skinindex);
+        this.textureFamilies = file.readShortArray(this.header.numskinfamilies * this.header.numskinref);
 
         /* Key Values */
 
-        // TODO: Add Key Values reader
+        file.setOffset(this.header.keyvalueindex);
+        console.log(file.readString(this.header.keyvaluesize));
 
         /* Bone Transformations */
 
-        // TODO: Add Bone Transformations reader
+        for (let srcboneTransformationReader = 0; srcboneTransformationReader < this.header2.numsrcbonetransform; srcboneTransformationReader++) {
+            file.setOffset(this.header2.srcbonetransformindex+ srcboneTransformationReader * 132);
+            this.srcBoneTransformations.push(new ReadSrcBoneTransform(file)); // Done
+        }
+
+        /* Liner Bone */
+
+        // TODO: Add Liner Bone reader
 
         /* Bone Flex Drivers */
 
@@ -179,7 +228,8 @@ class ReadMDL {
     public toJSON(): string {
         return JSON.stringify({
             Header: this.header,
-            'Body Parts': this.bodyParts,
+            'Header 2': this.header2,
+            'Sorce Bone Transformations': this.srcBoneTransformations,
         });
     }
 }
