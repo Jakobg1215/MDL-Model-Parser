@@ -8,7 +8,7 @@ import ReadQuatInterpBone from './ReadQuatInterpBone';
 
 class ReadBone {
     // Size of 216 bytes
-    public readonly sznameindex: number;
+    public readonly sznameindex: string;
     public readonly parent: number;
     public readonly bonecontroller: [number, number, number, number, number, number];
     public readonly pos: Vector3;
@@ -29,7 +29,7 @@ class ReadBone {
 
     public constructor(file: FileReader) {
         const index = file.fileReadOffset;
-        this.sznameindex = file.readInt();
+        this.sznameindex = file.readStringZeroTerminated();
         this.parent = file.readInt();
         this.bonecontroller = file.readIntArray(6) as any;
         this.pos = file.readVector3();

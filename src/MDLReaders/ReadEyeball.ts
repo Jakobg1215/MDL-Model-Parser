@@ -3,7 +3,7 @@ import type Vector3 from '../Vector3';
 
 class ReadEyeball {
     // Size of 172 bytes
-    public readonly sznameindex: number;
+    public readonly sznameindex: string;
     public readonly bone: number;
     public readonly org: Vector3;
     public readonly zoffset: number;
@@ -21,7 +21,7 @@ class ReadEyeball {
     public readonly m_bNonFACS: boolean;
 
     public constructor(file: FileReader) {
-        this.sznameindex = file.readInt();
+        this.sznameindex = file.readStringZeroTerminated();
         this.bone = file.readInt();
         this.org = file.readVector3();
         this.zoffset = file.readFloat();

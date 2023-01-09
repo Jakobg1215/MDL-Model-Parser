@@ -24,7 +24,7 @@ class ReadIKRule {
     public readonly contact: number;
     public readonly drop: number;
     public readonly top: number;
-    public readonly szattachmentindex: number;
+    public readonly szattachmentindex: string;
 
     public constructor(file: FileReader) {
         this.index = file.readInt();
@@ -52,7 +52,7 @@ class ReadIKRule {
         file.readInt(); // unused6
         file.readInt(); // unused7
         file.readInt(); // unused8
-        this.szattachmentindex = file.readInt();
+        this.szattachmentindex = file.readStringZeroTerminated();;
         file.readIntArray(7); // unused
     }
 }

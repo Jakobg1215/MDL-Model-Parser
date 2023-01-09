@@ -62,7 +62,7 @@ class ReadHeader {
     public readonly numincludemodels: number;
     public readonly includemodelindex: number;
     public readonly virtualModel: number;
-    public readonly szanimblocknameindex: number;
+    public readonly szanimblocknameindex: string;
     public readonly numanimblocks: number;
     public readonly animblockindex: number;
     public readonly animblockModel: number;
@@ -138,7 +138,7 @@ class ReadHeader {
         this.numincludemodels = file.readInt();
         this.includemodelindex = file.readInt();
         this.virtualModel = file.readInt();
-        this.szanimblocknameindex = file.readInt();
+        this.szanimblocknameindex = file.readStringZeroTerminated();;
         this.numanimblocks = file.readInt();
         this.animblockindex = file.readInt();
         this.animblockModel = file.readInt();

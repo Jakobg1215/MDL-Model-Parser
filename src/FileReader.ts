@@ -30,10 +30,14 @@ class FileReader {
         return value;
     }
 
-    public readStringZeroTerminated(): any {
-        const value = this.fileData.toString('ascii', this.offset, this.fileData.indexOf(0, this.offset));
-        this.offset += value.length + 1;
-        this.readBytes += value.length + 1;
+    public readStringZeroTerminated(): string {
+        const index = this.offset + this.readInt();
+        if (index === 0) {
+            return '';
+        }
+        // console.log(index);
+        const value = this.fileData.toString('ascii', index, this.fileData.indexOf(0, index));
+        this.readBytes += value.length;
         return value;
     }
 

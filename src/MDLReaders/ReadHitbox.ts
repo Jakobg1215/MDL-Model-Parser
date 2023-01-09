@@ -7,14 +7,14 @@ class ReadHitbox {
     public readonly group: number;
     public readonly bbmin: Vector3;
     public readonly bbmax: Vector3;
-    public readonly szhitboxnameindex: number;
+    public readonly szhitboxnameindex: string;
 
     public constructor(file: FileReader) {
         this.bone = file.readInt();
         this.group = file.readInt();
         this.bbmin = file.readVector3();
         this.bbmax = file.readVector3();
-        this.szhitboxnameindex = file.readInt();
+        this.szhitboxnameindex = file.readStringZeroTerminated();;
         file.readIntArray(8); // unused
     }
 }

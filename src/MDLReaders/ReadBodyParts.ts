@@ -3,7 +3,7 @@ import ReadModel from './ReadModel';
 
 class ReadBodyParts {
     // Size of 16 bytes
-    public readonly sznameindex: number;
+    public readonly sznameindex: string;
     public readonly nummodels: number;
     public readonly base: number;
     public readonly modelindex: number;
@@ -12,7 +12,7 @@ class ReadBodyParts {
 
     public constructor(file: FileReader) {
         const index = file.fileReadOffset;
-        this.sznameindex = file.readInt();
+        this.sznameindex = file.readStringZeroTerminated();
         this.nummodels = file.readInt();
         this.base = file.readInt();
         this.modelindex = file.readInt();

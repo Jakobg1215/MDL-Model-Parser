@@ -3,7 +3,7 @@ import ReadHitbox from './ReadHitbox';
 
 class ReadHitboxSet {
     // Size of 12 bytes
-    public readonly sznameindex: number;
+    public readonly sznameindex: string;
     public readonly numhitboxes: number;
     public readonly hitboxindex: number;
 
@@ -11,7 +11,7 @@ class ReadHitboxSet {
 
     public constructor(file: FileReader) {
         const index = file.fileReadOffset;
-        this.sznameindex = file.readInt();
+        this.sznameindex = file.readStringZeroTerminated();
         this.numhitboxes = file.readInt();
         this.hitboxindex = file.readInt();
 
