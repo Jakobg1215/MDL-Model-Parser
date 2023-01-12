@@ -17,6 +17,7 @@ import ReadIKLock from './MDLReaders/ReadIKLock';
 import ReadModelGroup from './MDLReaders/ReadModelGroup';
 import ReadMouth from './MDLReaders/ReadMouth';
 import ReadPoseParamDescription from './MDLReaders/ReadPoseParamDescription';
+import ReadSequenceDescription from './MDLReaders/ReadSequenceDescription';
 import ReadSrcBoneTransform from './MDLReaders/ReadSrcBoneTransform';
 import ReadTexture from './MDLReaders/ReadTexture';
 
@@ -29,6 +30,7 @@ class ReadMDL {
     public readonly hitboxSets: ReadHitboxSet[] = [];
     public readonly boneTableByName: number[];
     public readonly localAnimations: ReadAnimationDescription[] = [];
+    public readonly localSequences: ReadSequenceDescription[] = [];
     public readonly bodyParts: ReadBodyParts[] = [];
     public readonly flexDescriptions: ReadFlexDescription[] = [];
     public readonly flexControllers: ReadFlexController[] = [];
@@ -100,7 +102,10 @@ class ReadMDL {
 
         /* Sequences */
 
-        // TODO: Add sequence reader
+        for (let sequenceReader = 0; sequenceReader < this.header.numlocalseq; sequenceReader++) {
+            file.setOffset(this.header.localseqindex + sequenceReader * 212);
+            this.localSequences.push(new ReadSequenceDescription(file, this.header.numbones)); // Not Done
+        }
 
         /* Node Name */
 
@@ -210,7 +215,7 @@ class ReadMDL {
         /* Bone Transformations */
 
         for (let srcboneTransformationReader = 0; srcboneTransformationReader < this.header2.numsrcbonetransform; srcboneTransformationReader++) {
-            file.setOffset(this.header2.srcbonetransformindex+ srcboneTransformationReader * 132);
+            file.setOffset(this.header2.srcbonetransformindex + srcboneTransformationReader * 132);
             this.srcBoneTransformations.push(new ReadSrcBoneTransform(file)); // Done
         }
 
@@ -228,8 +233,7 @@ class ReadMDL {
     public toJSON(): string {
         return JSON.stringify({
             Header: this.header,
-            'Header 2': this.header2,
-            'Sorce Bone Transformations': this.srcBoneTransformations,
+            sequences: this.localSequences,
         });
     }
 }
