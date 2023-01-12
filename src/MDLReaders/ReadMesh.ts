@@ -35,7 +35,7 @@ class ReadMesh {
         file.readIntArray(8); // unused
 
         for (let flexReader = 0; flexReader < this.numflexes; flexReader++) {
-            file.setOffset(index + this.flexindex + flexReader * 63);
+            file.setOffset(index + this.flexindex + flexReader * 60);
             this.flexes.push(new ReadFlex(file));
         }
     }

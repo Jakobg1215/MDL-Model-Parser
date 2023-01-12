@@ -233,7 +233,6 @@ class ReadMDL {
     public toJSON(): string {
         return JSON.stringify({
             Header: this.header,
-            sequences: this.localSequences,
         });
     }
 }
