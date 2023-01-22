@@ -35,7 +35,7 @@ class FileReader {
         if (index === 0) {
             return '';
         }
-        // console.log(index);
+
         const value = this.fileData.toString('ascii', index, this.fileData.indexOf(0, index));
         this.readBytes += value.length;
         return value;

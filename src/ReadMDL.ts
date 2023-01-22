@@ -91,7 +91,7 @@ class ReadMDL {
 
         // What is this for?
         file.setOffset(this.header.bonetablebynameindex);
-        this.boneTableByName = file.readByteArray(this.header.numbones); // This is not reading all the bytes
+        this.boneTableByName = file.readByteArray(this.header.localanimindex - this.header.bonetablebynameindex); // This is not reading all the bytes
 
         /* Animations */
 
@@ -104,7 +104,7 @@ class ReadMDL {
 
         for (let sequenceReader = 0; sequenceReader < this.header.numlocalseq; sequenceReader++) {
             file.setOffset(this.header.localseqindex + sequenceReader * 212);
-            this.localSequences.push(new ReadSequenceDescription(file, this.header.numbones)); // Not Done
+            this.localSequences.push(new ReadSequenceDescription(file)); // Done
         }
 
         /* Node Name */
@@ -210,7 +210,7 @@ class ReadMDL {
         /* Key Values */
 
         file.setOffset(this.header.keyvalueindex);
-        console.log(file.readString(this.header.keyvaluesize));
+        file.readString(this.header.keyvaluesize);
 
         /* Bone Transformations */
 

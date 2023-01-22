@@ -1,5 +1,6 @@
 import type FileReader from '../FileReader';
 import type Vector3 from '../Vector3';
+import ReadActivityModifier from './ReadActivityModifier';
 import ReadAutoLayer from './ReadAutoLayer';
 import ReadEvent from './ReadEvent';
 import ReadIKLock from './ReadIKLock';
@@ -53,8 +54,10 @@ class ReadSequenceDescription {
     public readonly weights: number[] = [];
     public readonly ikLocks: ReadIKLock[] = [];
     public readonly animationIndices: number[] = [];
+    public readonly keyvalues: string;
+    public readonly activityModifiers: ReadActivityModifier[] = [];
 
-    public constructor(file: FileReader, boneCount: number) {
+    public constructor(file: FileReader) {
         const index = file.fileReadOffset;
         this.baseptr = file.readInt();
         this.szlabelindex = file.readStringZeroTerminated();
@@ -98,7 +101,7 @@ class ReadSequenceDescription {
         this.numactivitymodifiers = file.readInt();
         file.readIntArray(5); // unused
 
-        if (this.groupsize[0] > 1 || this.groupsize[1] > 1) {
+        if (this.posekeyindex) {
             file.setOffset(index + this.posekeyindex);
             this.poseKeys = file.readFloatArray(this.groupsize[0] + this.groupsize[1]);
         }
@@ -114,17 +117,25 @@ class ReadSequenceDescription {
         }
 
         file.setOffset(index + this.weightlistindex);
-        this.weights = file.readFloatArray(boneCount);
+        this.weights = file.readFloatArray((this.iklockindex - this.weightlistindex) / 4);
 
         for (let ikLocksReader = 0; ikLocksReader < this.numiklocks; ikLocksReader++) {
             file.setOffset(index + this.iklockindex + ikLocksReader * 32);
             this.ikLocks.push(new ReadIKLock(file));
         }
 
-        file.setOffset(index + this.animindexindex);
-        this.animationIndices = file.readIntArray(this.groupsize[0] * this.groupsize[1]);
+        if (this.animindexindex) {
+            file.setOffset(index + this.animindexindex);
+            this.animationIndices = file.readIntArray(this.groupsize[0] * this.groupsize[1]);
+        }
 
-        // TODO: Add support for keyvalues
+        file.setOffset(index + this.keyvalueindex);
+        this.keyvalues = file.readString(this.keyvaluesize);
+
+        for (let activityModifierReader = 0; activityModifierReader < this.numactivitymodifiers; activityModifierReader++) {
+            file.setOffset(index + this.activitymodifierindex + activityModifierReader * 32);
+            this.activityModifiers.push(new ReadActivityModifier(file));
+        }
     }
 }
 
