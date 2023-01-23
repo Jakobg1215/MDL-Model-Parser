@@ -1,4 +1,5 @@
 import type FileReader from '../FileReader';
+import ReadAnimationSections from './ReadAnimationSections';
 import ReadMovement from './ReadMovement';
 
 class ReadAnimationDescription {
@@ -25,6 +26,7 @@ class ReadAnimationDescription {
     public readonly zeroframestall: number;
 
     public readonly movements: ReadMovement[] = [];
+    public readonly animationSections: ReadAnimationSections[] = [];
 
     public constructor(file: FileReader) {
         const index = file.fileReadOffset;
@@ -49,6 +51,22 @@ class ReadAnimationDescription {
         this.zeroframecount = file.readShort();
         this.zeroframeindex = file.readInt();
         this.zeroframestall = file.readFloat();
+
+        if (this.animblock !== -1) {
+            let sectionframes = 0;
+            if (this.sectionframes !== 0) {
+                sectionframes = this.numframes / this.sectionframes + 2;
+                for (let animSectionReader = 0; animSectionReader < sectionframes; animSectionReader++) {
+                    file.setOffset(index + this.sectionindex + animSectionReader * 8);
+                    this.animationSections.push(new ReadAnimationSections(file));
+                }
+            }
+
+            if (this.animblock === 0) {
+                if (sectionframes === 0) {
+                }
+            }
+        }
 
         for (let movementReader = 0; movementReader < this.nummovements; movementReader++) {
             file.setOffset(index + this.movementindex + movementReader * 44);
