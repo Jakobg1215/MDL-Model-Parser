@@ -31,7 +31,7 @@ class ReadAnimationDescription {
     public constructor(file: FileReader) {
         const index = file.fileReadOffset;
         this.baseptr = file.readInt();
-        this.sznameindex = file.readStringZeroTerminated();
+        this.sznameindex = file.readStringZeroTerminated(index);
         this.fps = file.readFloat();
         this.flags = file.readInt();
         this.numframes = file.readInt();

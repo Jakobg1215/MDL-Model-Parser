@@ -9,8 +9,9 @@ class ReadFlexController {
     public readonly max: number;
 
     public constructor(file: FileReader) {
-        this.sztypeindex = file.readStringZeroTerminated();
-        this.sznameindex = file.readStringZeroTerminated();
+        const index = file.fileReadOffset;
+        this.sztypeindex = file.readStringZeroTerminated(index);
+        this.sznameindex = file.readStringZeroTerminated(index);
         this.localToGlobal = file.readInt();
         this.min = file.readFloat();
         this.max = file.readFloat();

@@ -60,8 +60,8 @@ class ReadSequenceDescription {
     public constructor(file: FileReader) {
         const index = file.fileReadOffset;
         this.baseptr = file.readInt();
-        this.szlabelindex = file.readStringZeroTerminated();
-        this.szactivitynameindex = file.readStringZeroTerminated();
+        this.szlabelindex = file.readStringZeroTerminated(index);
+        this.szactivitynameindex = file.readStringZeroTerminated(index);
         this.flags = file.readInt();
         this.activity = file.readInt();
         this.actweight = file.readInt();

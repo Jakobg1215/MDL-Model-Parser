@@ -27,6 +27,7 @@ class ReadIKRule {
     public readonly szattachmentindex: string;
 
     public constructor(file: FileReader) {
+        const index = file.fileReadOffset;
         this.index = file.readInt();
         this.type = file.readInt();
         this.chain = file.readInt();
@@ -52,7 +53,7 @@ class ReadIKRule {
         file.readInt(); // unused6
         file.readInt(); // unused7
         file.readInt(); // unused8
-        this.szattachmentindex = file.readStringZeroTerminated();;
+        this.szattachmentindex = file.readStringZeroTerminated(index);
         file.readIntArray(7); // unused
     }
 }

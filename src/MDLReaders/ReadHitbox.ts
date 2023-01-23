@@ -10,11 +10,12 @@ class ReadHitbox {
     public readonly szhitboxnameindex: string;
 
     public constructor(file: FileReader) {
+        const index = file.fileReadOffset;
         this.bone = file.readInt();
         this.group = file.readInt();
         this.bbmin = file.readVector3();
         this.bbmax = file.readVector3();
-        this.szhitboxnameindex = file.readStringZeroTerminated();;
+        this.szhitboxnameindex = file.readStringZeroTerminated(index);
         file.readIntArray(8); // unused
     }
 }

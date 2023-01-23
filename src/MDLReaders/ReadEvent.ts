@@ -1,4 +1,4 @@
-import type FileReader from "../FileReader";
+import type FileReader from '../FileReader';
 
 class ReadEvent {
     // Size of 80 bytes
@@ -9,11 +9,12 @@ class ReadEvent {
     public readonly szeventindex: string;
 
     public constructor(file: FileReader) {
+        const index = file.fileReadOffset;
         this.cycle = file.readFloat();
         this.event = file.readInt();
         this.type = file.readInt();
         this.options = file.readString(64);
-        this.szeventindex = file.readStringZeroTerminated();
+        this.szeventindex = file.readStringZeroTerminated(index);
     }
 }
 

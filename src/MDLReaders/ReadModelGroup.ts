@@ -1,4 +1,4 @@
-import type FileReader from "../FileReader";
+import type FileReader from '../FileReader';
 
 class ReadModelGroup {
     // Size of 8 bytes
@@ -6,8 +6,9 @@ class ReadModelGroup {
     public readonly sznameindex: string;
 
     public constructor(file: FileReader) {
-        this.szlabelindex = file.readStringZeroTerminated();;
-        this.sznameindex = file.readStringZeroTerminated();
+        const index = file.fileReadOffset;
+        this.szlabelindex = file.readStringZeroTerminated(index);
+        this.sznameindex = file.readStringZeroTerminated(index);
     }
 }
 

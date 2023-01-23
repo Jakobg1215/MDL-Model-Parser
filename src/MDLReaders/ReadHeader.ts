@@ -138,7 +138,7 @@ class ReadHeader {
         this.numincludemodels = file.readInt();
         this.includemodelindex = file.readInt();
         this.virtualModel = file.readInt();
-        this.szanimblocknameindex = file.readStringZeroTerminated();;
+        this.szanimblocknameindex = file.readStringZeroTerminated();
         this.numanimblocks = file.readInt();
         this.animblockindex = file.readInt();
         this.animblockModel = file.readInt();

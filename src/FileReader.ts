@@ -30,8 +30,8 @@ class FileReader {
         return value;
     }
 
-    public readStringZeroTerminated(): string {
-        const index = this.offset + this.readInt();
+    public readStringZeroTerminated(baseIndex: number = this.offset): string {
+        const index = baseIndex + this.readInt();
         if (index === 0) {
             return '';
         }

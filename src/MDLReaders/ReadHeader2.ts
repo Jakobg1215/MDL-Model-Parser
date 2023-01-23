@@ -11,12 +11,13 @@ class ReadHeader2 {
     public readonly m_nBoneFlexDriverIndex: number;
 
     public constructor(file: FileReader) {
+        const index = file.fileReadOffset;
         this.numsrcbonetransform = file.readInt();
         this.srcbonetransformindex = file.readInt();
         this.illumpositionattachmentindex = file.readInt();
         this.flMaxEyeDeflection = file.readFloat();
         this.linearboneindex = file.readInt();
-        this.sznameindex = file.readStringZeroTerminated();
+        this.sznameindex = file.readStringZeroTerminated(index);
         this.m_nBoneFlexDriverCount = file.readInt();
         this.m_nBoneFlexDriverIndex = file.readInt();
         file.readIntArray(56); // reserved

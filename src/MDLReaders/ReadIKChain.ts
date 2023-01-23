@@ -1,5 +1,5 @@
-import type FileReader from "../FileReader";
-import ReadIkLink from "./ReadIkLink";
+import type FileReader from '../FileReader';
+import ReadIkLink from './ReadIkLink';
 
 class ReadIKChain {
     // Size of 16 bytes
@@ -12,7 +12,7 @@ class ReadIKChain {
 
     public constructor(file: FileReader) {
         const index = file.fileReadOffset;
-        this.sznameindex = file.readStringZeroTerminated();
+        this.sznameindex = file.readStringZeroTerminated(index);
         this.linktype = file.readInt();
         this.numlinks = file.readInt();
         this.linkindex = file.readInt();

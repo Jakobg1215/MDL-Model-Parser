@@ -11,7 +11,7 @@ class ReadHitboxSet {
 
     public constructor(file: FileReader) {
         const index = file.fileReadOffset;
-        this.sznameindex = file.readStringZeroTerminated();
+        this.sznameindex = file.readStringZeroTerminated(index);
         this.numhitboxes = file.readInt();
         this.hitboxindex = file.readInt();
 
