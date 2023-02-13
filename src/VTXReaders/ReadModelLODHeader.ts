@@ -2,8 +2,23 @@ import type FileReader from '../FileReader';
 import ReadMeshHeader from './ReadMeshHeader';
 
 class ReadModelLODHeader {
+    /**
+     * The count of how many meshes there are.
+     *
+     * @todo Find if the limit can go past 256.
+     */
     public readonly numMeshes: number;
+
+    /**
+     * The byte offset to start reading the meshes.
+     */
     public readonly meshOffset: number;
+
+    /**
+     * The value for the lod to switch to diffrent lod.
+     *
+     * @todo Can this be diffent from what the other lods are?
+     */
     public readonly switchPoint: number;
 
     public readonly meshes: ReadMeshHeader[] = [];

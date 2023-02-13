@@ -3,12 +3,55 @@ import ReadStripHeader from './ReadStripHeader';
 import ReadVertext from './ReadVertext';
 
 class ReadStripGroupHeader {
+    /**
+     * The count of how many vertices there are.
+     *
+     * @todo Find out what these are used for.
+     */
     public readonly numVerts: number;
+
+    /**
+     * The byte offset to start reading the vertices.
+     */
     public readonly vertOffset: number;
+
+    /**
+     * The count of how many indices there are.
+     *
+     * @todo Find out what these point twards.
+     */
     public readonly numIndices: number;
+
+    /**
+     * The byte offset to start reading the indices.
+     */
     public readonly indexOffset: number;
+
+    /**
+     * The count of how many strips there are.
+     *
+     * @todo Find out what these are used for.
+     */
     public readonly numStrips: number;
+
+    /**
+     * The byte offset to start reading the strips.
+     */
     public readonly stripOffset: number;
+
+    /**
+     * This has 4 known flags.
+     *
+     * STRIPGROUP_IS_FLEXED = 1
+     *
+     * STRIPGROUP_IS_HWSKINNED = 2
+     *
+     * STRIPGROUP_IS_DELTA_FLEXED = 4
+     *
+     * STRIPGROUP_SUPPRESS_HW_MORPH = 8 This is a temporary flag used at run time.
+     *
+     * @todo What do theses values specify
+     */
     public readonly flags: number;
 
     public readonly strips: ReadStripHeader[] = [];

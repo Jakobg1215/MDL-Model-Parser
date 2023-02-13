@@ -2,7 +2,16 @@ import type FileReader from '../FileReader';
 import ReadModelLODHeader from './ReadModelLODHeader';
 
 class ReadModelHeader {
+    /**
+     * The count of how many lods there are.
+     *
+     * This should be the same as the header.
+     */
     public readonly numLODs: number;
+
+    /**
+     * The byte offset to start reading the lods.
+     */
     public readonly lodOffset: number;
 
     public readonly modelLODs: ReadModelLODHeader[] = [];
