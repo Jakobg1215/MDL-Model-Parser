@@ -5,6 +5,7 @@ import ReadAttachment from './MDLReaders/ReadAttachment';
 import ReadBodyParts from './MDLReaders/ReadBodyParts';
 import ReadBone from './MDLReaders/ReadBone';
 import ReadBoneController from './MDLReaders/ReadBoneController';
+import ReadBoneFlexDriver from './MDLReaders/ReadBoneFlexDriver';
 import ReadFlexController from './MDLReaders/ReadFlexController';
 import ReadFlexControllerUI from './MDLReaders/ReadFlexControllerUI';
 import ReadFlexDescription from './MDLReaders/ReadFlexDescription';
@@ -46,6 +47,7 @@ class ReadMDL {
     public readonly textureDirectories: number[] = [];
     public readonly textureFamilies: number[] = [];
     public readonly srcBoneTransformations: ReadSrcBoneTransform[] = [];
+    public readonly boneFlexDrivers: ReadBoneFlexDriver[] = [];
 
     public constructor(file: FileReader) {
         const fileSize = file.readableBytes.length;
@@ -107,11 +109,19 @@ class ReadMDL {
             this.localSequences.push(new ReadSequenceDescription(file)); // Done
         }
 
+        // TODO: Save the nodes. What are nodes?
+
         /* Node Name */
+
+        for (let nodeNameReader = 0; nodeNameReader < this.header.numlocalnodes; nodeNameReader++) {
+            file.setOffset(this.header.localnodeindex + nodeNameReader * 4);
+            file.readStringZeroTerminated();
+        }
 
         /* Nodes */
 
-        // TODO: Add nodes reader
+        file.setOffset(this.header.localnodeindex);
+        file.readByteArray(this.header.numlocalnodes ** 2);
 
         /* Body Parts */
 
@@ -215,7 +225,7 @@ class ReadMDL {
         /* Bone Transformations */
 
         for (let srcboneTransformationReader = 0; srcboneTransformationReader < this.header2.numsrcbonetransform; srcboneTransformationReader++) {
-            file.setOffset(this.header2.srcbonetransformindex + srcboneTransformationReader * 132);
+            file.setOffset(this.header2.srcbonetransformindex + srcboneTransformationReader * 100);
             this.srcBoneTransformations.push(new ReadSrcBoneTransform(file)); // Done
         }
 
@@ -225,7 +235,10 @@ class ReadMDL {
 
         /* Bone Flex Drivers */
 
-        // TODO: Add Bone Flex Drivers reader
+        for (let boneFlexDriverReader = 0; boneFlexDriverReader < this.header2.m_nBoneFlexDriverCount; boneFlexDriverReader++) {
+            file.setOffset(this.header2.m_nBoneFlexDriverIndex + boneFlexDriverReader * 24);
+            this.boneFlexDrivers.push(new ReadBoneFlexDriver(file));
+        }
 
         console.log('MDL Read Bytes: %d, %d unread bytes', file.readByteCount, fileSize - file.readByteCount);
     }
