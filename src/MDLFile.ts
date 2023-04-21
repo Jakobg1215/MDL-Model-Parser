@@ -90,6 +90,12 @@ class MDLFile {
 
         this.readSequences();
 
+        file.setOffset(this.header.localnodenameindex);
+        file.readIntArray(this.header.numlocalnodes); // TODO: Save this data for decompiing.
+
+        file.setOffset(this.header.localnodeindex);
+        file.readIntArray(this.header.numlocalnodes * this.header.numlocalnodes); // TODO: Save this data for decompiing.
+
         this.logger.logStudioRead('MDLFile', 0, file.readCount, file.fileSize);
 
         this.logger.close();
