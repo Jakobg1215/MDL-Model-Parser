@@ -18,6 +18,7 @@ import JiggleBone from './studio/mdl/JiggleBone.ts';
 import ProceduralBoneType from './studio/mdl/ProceduralBoneType.ts';
 import QuatInterpBone from './studio/mdl/QuatInterpBone.ts';
 import QuatInterpInfo from './studio/mdl/QuatInterpInfo.ts';
+import SequenceDescription from './studio/mdl/SequenceDescription.ts';
 import FileReader from './utilities/FileReader.ts';
 import Logger from './utilities/Logger.ts';
 
@@ -33,6 +34,7 @@ class MDLFile {
     public readonly hitboxSets: HitboxSet[] = [];
     public readonly boneTableByName: number[] = [];
     public readonly animations: AnimationDescription[] = [];
+    public readonly sequences: SequenceDescription[] = [];
 
     public constructor(private readonly file: FileReader) {
         this.header = new Header(file, file.readOffset);
@@ -81,8 +83,12 @@ class MDLFile {
 
         this.readAnimations();
 
-        console.log(file.readOffset);
-        console.log(this.header.localseqindex);
+        file.setOffset(this.header.localseqindex);
+        for (let readSequences = 0; readSequences < this.header.numlocalseq; readSequences++) {
+            this.sequences.push(new SequenceDescription(file, file.readOffset));
+        }
+
+        this.readSequences();
 
         this.logger.logStudioRead('MDLFile', 0, file.readCount, file.fileSize);
 
@@ -224,6 +230,30 @@ class MDLFile {
         }
 
         this.file.alignment4(this.logger);
+    }
+
+    private readSequences(): void {
+        for (const sequence of this.sequences) {
+            if (sequence.posekeyindex) {
+                this.file.setOffset(sequence.fileStart + sequence.posekeyindex);
+                this.file.readFloatArray(sequence.groupsize[0] + sequence.groupsize[1]); // TODO: Save this data for decompiing.
+            }
+
+            this.file.setOffset(sequence.fileStart + sequence.eventindex);
+            for (let readEvents = 0; readEvents < sequence.numevents; readEvents++) {
+                // sequence.events.push(new Event(this.file, this.file.readOffset)); // TODO: Implement reading
+            }
+
+            this.file.setOffset(sequence.fileStart + sequence.autolayerindex);
+            for (let readAutoLayers = 0; readAutoLayers < sequence.numautolayers; readAutoLayers++) {
+                // sequence.autoLayers.push(new AutoLayer(this.file, this.file.readOffset)); // TODO: Implement reading
+            }
+
+            this.file.setOffset(sequence.fileStart + sequence.weightlistindex);
+            this.file.readFloatArray((sequence.iklockindex - sequence.weightlistindex) / 4); // TODO: Save this data for decompiing.
+
+            // TODO: Read reset of sequence
+        }
     }
 
     public toJSON(): string {
