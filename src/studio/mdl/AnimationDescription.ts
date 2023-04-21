@@ -1,5 +1,4 @@
 import type FileReader from '../../utilities/FileReader.ts';
-
 import type AnimSection from './AnimSection.ts';
 import type IKRule from './IKRule.ts';
 import type LocalHierarchy from './LocalHierarchy.ts';

@@ -117,6 +117,16 @@ class FileReader {
         return ints;
     }
 
+    public readUnsignedIntArray(length: number): number[] {
+        const ints = [];
+
+        for (let readInts = 0; readInts < length; readInts++) {
+            ints.push(this.readUnsignedInt());
+        }
+
+        return ints;
+    }
+
     public readFloat(): number {
         const float = this.data.getFloat32(this.offset, true);
 

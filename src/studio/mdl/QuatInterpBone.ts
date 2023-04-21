@@ -1,5 +1,4 @@
 import type FileReader from '../../utilities/FileReader.ts';
-
 import QuatInterpInfo from './QuatInterpInfo.ts';
 
 class QuatInterpBone {

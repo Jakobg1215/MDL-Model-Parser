@@ -1,7 +1,6 @@
 import type Vector3 from '../../mathematics/Vector3.ts';
 import type Vector4 from '../../mathematics/Vector4.ts';
 import type FileReader from '../../utilities/FileReader.ts';
-
 import AimAtBone from './AimAtBone.ts';
 import AxisInterpBone from './AxisInterpBone.ts';
 import JiggleBone from './JiggleBone.ts';

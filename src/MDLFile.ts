@@ -1,4 +1,9 @@
+import Float16 from './mathematics/Float16.ts';
+import Quaternion48 from './mathematics/Quaternion48.ts';
+import Quaternion64 from './mathematics/Quaternion64.ts';
 import AimAtBone from './studio/mdl/AimAtBone.ts';
+import AnimSection from './studio/mdl/AnimSection.ts';
+import Animation from './studio/mdl/Animation.ts';
 import AnimationDescription from './studio/mdl/AnimationDescription.ts';
 import Attachment from './studio/mdl/Attachment.ts';
 import AxisInterpBone from './studio/mdl/AxisInterpBone.ts';
@@ -8,6 +13,7 @@ import Header from './studio/mdl/Header.ts';
 import Header2 from './studio/mdl/Header2.ts';
 import Hitbox from './studio/mdl/Hitbox.ts';
 import HitboxSet from './studio/mdl/HitboxSet.ts';
+import IKRule from './studio/mdl/IKRule.ts';
 import JiggleBone from './studio/mdl/JiggleBone.ts';
 import ProceduralBoneType from './studio/mdl/ProceduralBoneType.ts';
 import QuatInterpBone from './studio/mdl/QuatInterpBone.ts';
@@ -64,7 +70,6 @@ class MDLFile {
 
         this.readHitboxes();
 
-        file.setOffset(this.header.bonetablebynameindex);
         this.readBoneTableByName();
         file.alignment4(this.logger);
 
@@ -72,7 +77,12 @@ class MDLFile {
         for (let readAnimations = 0; readAnimations < this.header.numlocalanim; readAnimations++) {
             this.animations.push(new AnimationDescription(file, file.readOffset));
         }
-        this.logger.logStudioRead('Animations', this.header.localanimindex, file.readOffset, this.header.numlocalanim);
+        this.logger.logStudioRead('AnimationDescriptions', this.header.localanimindex, file.readOffset, this.header.numlocalanim);
+
+        this.readAnimations();
+
+        console.log(file.readOffset);
+        console.log(this.header.localseqindex);
 
         this.logger.logStudioRead('MDLFile', 0, file.readCount, file.fileSize);
 
@@ -140,8 +150,80 @@ class MDLFile {
     }
 
     private readBoneTableByName(): void {
+        this.file.setOffset(this.header.bonetablebynameindex);
         this.boneTableByName.push(...this.file.readUnsignedByteArray(this.header.numbones));
         this.logger.logStudioRead('BoneTableByName', this.header.bonetablebynameindex, this.file.readOffset);
+    }
+
+    private readAnimations(): void {
+        for (const animation of this.animations) {
+            if (animation.animindex === -1) continue; // Out of date model format
+            if (animation.animindex === 0) continue; // External data?
+
+            const sections = [];
+            const sectionCount = animation.sectionindex === 0 ? 0 : animation.numframes / animation.sectionframes + 2;
+
+            this.file.setOffset(animation.fileStart + animation.sectionindex);
+            for (let readSections = 0; readSections < sectionCount; readSections++) {
+                sections.push(new AnimSection(this.file, this.file.readOffset));
+            }
+
+            if (sectionCount === 0) {
+                this.file.setOffset(animation.fileStart + animation.animindex);
+                this.readAnimationData();
+            }
+            for (const section of sections) {
+                if (section.animblock !== 0) continue;
+                this.file.setOffset(animation.fileStart + section.animindex);
+                this.readAnimationData();
+            }
+
+            if (animation.ikruleindex) {
+                this.file.setOffset(animation.fileStart + animation.ikruleindex);
+                for (let readIkRules = 0; readIkRules < animation.numikrules; readIkRules++) {
+                    animation.ikRules.push(new IKRule(this.file, this.file.readOffset));
+                }
+                // TODO: Read Ik Errors
+            }
+
+            if (animation.ikruleindex) {
+                // TODO: Read loacal hierarchy
+            }
+        }
+    }
+
+    private readAnimationData(): void {
+        let animation = new Animation(this.file, this.file.readOffset);
+
+        if (animation.bone === 255) return; // No animation data
+
+        while (true) {
+            if (animation.flags & (Animation.ANIM_RAWROT | Animation.ANIM_RAWPOS | Animation.ANIM_RAWROT2)) {
+                if (animation.flags & Animation.ANIM_RAWROT) {
+                    Quaternion48.fromFile(this.file);
+                }
+
+                if (animation.flags & Animation.ANIM_RAWROT2) {
+                    Quaternion64.fromFile(this.file);
+                }
+
+                if (animation.flags & Animation.ANIM_RAWPOS) {
+                    Float16.fromFile(this.file);
+                }
+            } else {
+                // TODO: Add reading for animating data
+            }
+
+            if (animation.nextoffset === 0) {
+                this.file.setOffset(this.file.readOffset + 4);
+                break;
+            }
+
+            this.file.setOffset(this.file.readOffset + animation.nextoffset);
+            animation = new Animation(this.file, this.file.readOffset);
+        }
+
+        this.file.alignment4(this.logger);
     }
 
     public toJSON(): string {
