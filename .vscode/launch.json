@@ -2,15 +2,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "skipFiles": ["<node_internals>/**"],
-            "program": "${workspaceFolder}\\dist\\index",
-            "preLaunchTask": "tsc: build - tsconfig.json",
-            "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-            "internalConsoleOptions": "openOnSessionStart",
-            "console": "internalConsole"
+            "type": "node",
+            "program": "${workspaceFolder}/src/main.ts",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "C:\\Users\\jakob\\.deno\\bin\\deno.EXE",
+            "runtimeArgs": ["run", "--inspect-wait", "--allow-read", "--allow-write"],
+            "attachSimplePort": 9229,
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart"
         }
     ]
 }
