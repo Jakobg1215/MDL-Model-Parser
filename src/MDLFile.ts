@@ -7,14 +7,18 @@ import Animation from './studio/mdl/Animation.ts';
 import AnimationDescription from './studio/mdl/AnimationDescription.ts';
 import Attachment from './studio/mdl/Attachment.ts';
 import AxisInterpBone from './studio/mdl/AxisInterpBone.ts';
+import BodyPart from './studio/mdl/BodyPart.ts';
 import Bone from './studio/mdl/Bone.ts';
 import BoneController from './studio/mdl/BoneController.ts';
+import Flex from './studio/mdl/Flex.ts';
 import Header from './studio/mdl/Header.ts';
 import Header2 from './studio/mdl/Header2.ts';
 import Hitbox from './studio/mdl/Hitbox.ts';
 import HitboxSet from './studio/mdl/HitboxSet.ts';
 import IKRule from './studio/mdl/IKRule.ts';
 import JiggleBone from './studio/mdl/JiggleBone.ts';
+import Mesh from './studio/mdl/Mesh.ts';
+import Model from './studio/mdl/Model.ts';
 import ProceduralBoneType from './studio/mdl/ProceduralBoneType.ts';
 import QuatInterpBone from './studio/mdl/QuatInterpBone.ts';
 import QuatInterpInfo from './studio/mdl/QuatInterpInfo.ts';
@@ -35,6 +39,7 @@ class MDLFile {
     public readonly boneTableByName: number[] = [];
     public readonly animations: AnimationDescription[] = [];
     public readonly sequences: SequenceDescription[] = [];
+    public readonly bodyParts: BodyPart[] = [];
 
     public constructor(private readonly file: FileReader) {
         this.header = new Header(file, file.readOffset);
@@ -87,14 +92,28 @@ class MDLFile {
         for (let readSequences = 0; readSequences < this.header.numlocalseq; readSequences++) {
             this.sequences.push(new SequenceDescription(file, file.readOffset));
         }
+        this.logger.logStudioRead('SequenceDescriptions', this.header.localseqindex, file.readOffset, this.header.numlocalseq);
 
         this.readSequences();
 
         file.setOffset(this.header.localnodenameindex);
         file.readIntArray(this.header.numlocalnodes); // TODO: Save this data for decompiing.
+        this.logger.logStudioRead('LocalNodeName', this.header.localnodenameindex, file.readOffset);
 
         file.setOffset(this.header.localnodeindex);
-        file.readIntArray(this.header.numlocalnodes * this.header.numlocalnodes); // TODO: Save this data for decompiing.
+        file.readUnsignedByteArray(this.header.numlocalnodes * this.header.numlocalnodes); // TODO: Save this data for decompiing.
+        this.logger.logStudioRead('LocalNodes', this.header.localnodeindex, file.readOffset);
+
+        file.setOffset(this.header.bodypartindex);
+        for (let readBodyParts = 0; readBodyParts < this.header.numbodyparts; readBodyParts++) {
+            this.bodyParts.push(new BodyPart(file, file.readOffset));
+        }
+        this.logger.logStudioRead('BodyParts', this.header.bodypartindex, file.readOffset, this.header.numbodyparts);
+
+        this.readBodyParts();
+
+        // Studiomdl writes model data after flex and other data for some reason.
+        this.readModels();
 
         this.logger.logStudioRead('MDLFile', 0, file.readCount, file.fileSize);
 
@@ -259,6 +278,60 @@ class MDLFile {
             this.file.readFloatArray((sequence.iklockindex - sequence.weightlistindex) / 4); // TODO: Save this data for decompiing.
 
             // TODO: Read reset of sequence
+        }
+    }
+
+    private readBodyParts(): void {
+        for (const bodyPart of this.bodyParts) {
+            this.file.setOffset(bodyPart.fileStart + bodyPart.modelindex);
+            let modelCount = 0;
+
+            for (let readModels = 0; readModels < bodyPart.nummodels; readModels++) {
+                bodyPart.models.push(new Model(this.file, this.file.readOffset));
+                modelCount++;
+                this.file.alignment4(this.logger);
+            }
+            this.logger.logStudioRead('Models', bodyPart.fileStart + bodyPart.modelindex, this.file.readOffset, modelCount);
+        }
+    }
+
+    private readModels(): void {
+        const meshes: Mesh[] = [];
+        for (const bodyPart of this.bodyParts) {
+            for (const model of bodyPart.models) {
+                this.file.setOffset(model.fileStart + model.meshindex);
+
+                for (let readMeshes = 0; readMeshes < model.nummeshes; readMeshes++) {
+                    const mesh = new Mesh(this.file, this.file.readOffset);
+                    model.meshes.push(mesh);
+                    meshes.push(mesh);
+                }
+
+                this.file.setOffset(model.fileStart + model.eyeballindex);
+                // TODO: Read eyeballs
+            }
+        }
+        this.readMeshes(meshes);
+    }
+
+    private readMeshes(meshes: Mesh[]): void {
+        const flexes: Flex[] = [];
+        for (const mesh of meshes) {
+            if (mesh.numflexes === 0) continue;
+
+            this.file.setOffset(mesh.fileStart + mesh.flexindex);
+            for (let readFlexes = 0; readFlexes < mesh.numflexes; readFlexes++) {
+                const flex = new Flex(this.file, this.file.readOffset);
+                mesh.flexes.push(flex);
+                flexes.push(flex);
+            }
+        }
+    }
+
+    private readFlexes(flexes: Flex[]): void {
+        for (const flex of flexes) {
+            this.file.setOffset(flex.fileStart + flex.vertindex);
+            // TODO: Read Flexes
         }
     }
 
